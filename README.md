@@ -5,8 +5,8 @@ This project utilizes machine learning to predict the outcome of WHL (Western Ho
 ## Key Features:
 - **Data Preparation**: Team statistics are updated with the most recent data, and various features like goals, power-play percentage (PP%), shots on goal (SOG), and faceoff win percentage (FOW%) are calculated.
 - **Machine Learning Models**: The project uses four machine learning classification models: Random Forest, Naive Bayes, Logistic Regression, and Support Vector Classifier (SVC).
-- **Model Evaluation**: The models are trained using historical team data, and each model is evaluated based on its accuracy. The model with the highest accuracy for each team is then used to predict the outcome of future games.
-- **Prediction Process**: The model evaluates the home and away teams for an upcoming game and predicts the winner based on which classifier has the highest accuracy for each team. The accuracy for each model typically falls in the range of 65%-70%, which is a notable improvement over a 50-50 guess.
+- **Ensemble Approach**: Instead of using a single classifier for each team, the model now calculates the predicted probabilities for each team across the multiple classifiers. These probabilities are averaged to provide a more comprehensive prediction for the outcome of the game.
+- **Prediction Process**: For each game, the model calculates the predicted probability of both the home and away teams winning based on the ensemble of classifiers. The team with the higher average predicted probability is predicted to win.
 
 ## Methodology:
 ### Feature Extraction:
@@ -23,13 +23,13 @@ For each team, the models are trained on historical data using the following ste
 
 1. **Data Preprocessing**: The features are scaled using `StandardScaler` to ensure that all features have equal weight in the model training process.
 2. **Training and Testing**: The data is split into training and testing sets, typically with 80% used for training and 20% used for testing. Each classifier is trained on the training data and evaluated on the test data using accuracy scores.
-3. **Model Evaluation**: For each classifier, accuracy scores are computed using confusion matrices. The classifier with the highest accuracy for each team is selected for future game predictions.
+
+### Ensemble Approach:
+- **Ensemble Classifiers**: The model now leverages an ensemble approach, where the predicted probabilities from multiple classifiers (Random Forest, Naive Bayes, Logistic Regression, and Support Vector Classifier) are averaged to get the final probability for each team.
+- **Prediction**: Instead of choosing a classifier with the highest accuracy, the predicted probabilities for each team are averaged across all classifiers. The team with the higher average predicted probability is predicted as the winner.
 
 ### Accuracy Evaluation:
-The accuracy of each classifier is calculated using a confusion matrix to compare the predicted and actual outcomes of games. The classifier with the highest accuracy score for each team is chosen to make predictions for future matchups. Typically, the model achieves an accuracy of 65%-70%, which is a significant improvement over random guessing (50-50).
-
-### Prediction:
-Once the best classifier for each team has been selected, the model predicts the winner of future games by comparing the accuracy of the home and away teams' classifiers. The team with the higher accuracy is predicted to win. The model is trained and tested using real-time data (within the past game date) to ensure up-to-date predictions.
+- **Model Confidence**: The model calculates the average probability of each team winning, based on the confidence level of the ensemble classifiers. This gives a more nuanced view of the likelihood of each team winning, rather than solely relying on accuracy scores.
 
 ## API Requests:
 The model relies on API requests to fetch the latest data on team performance and game statistics. These requests ensure that the model uses the most current data available, which is essential for making accurate predictions. The data includes statistics like goals scored, power-play percentage, shots on goal, and faceoff win percentage for each team.
@@ -37,7 +37,7 @@ The model relies on API requests to fetch the latest data on team performance an
 ## Necessary Files:
 - **`whl_team_stats_script.ipynb`**: This notebook is used for the **initial setup** of team statistics. It fetches, processes, and stores the data in **`All_teams_WHL_stats.csv`**. Once the CSV is updated, this notebook does not need to be run again. An external user should not need to run this notebook
 - **`All_teams_WHL_stats.csv`**: Contains historical data of WHL games, used for training the models. This file is automatically updated when running `whl_team_stats_script.ipynb`.
-- **`whl_win_predictor.py`**: Main script that handles the model training, game prediction, and output generation.
+- **`whl_win_predictor.ipynb`**: Main script that handles the model training, game prediction, and output generation.
 
 ## Using `whl_win_predictor.ipynb`:
 The `whl_win_predictor.ipynb` notebook script is used to make predictions about the outcomes of upcoming games. It loads the historical data, trains the classifiers, and then uses the best performing classifier for each team to predict the winner of the next game. By evaluating the accuracy of the home and away team classifiers, the script identifies the more likely winner. Predictions are made using the latest available data.
@@ -51,8 +51,8 @@ No need for library installations. The .ipynb files handle that for you with try
 
 ## File Descriptions:
 - **`All_teams_WHL_stats.csv`**: Contains historical data of WHL games, used for training the models.
-- **`whl_win_predictor.py`**: Main script that handles the model training, game prediction, and output generation.
+- **`whl_win_predictor.ipynb`**: Main script that handles the model training, game prediction, and output generation.
 - **`predictions_output.txt`**: Stores the predicted game outcomes and model accuracy.
 
 ## Conclusion:
-While the model isn't perfect, it provides valuable insights by predicting outcomes based on team statistics. It can assist in forecasting the next game day’s winner with an accuracy above random chance.
+The ensemble approach improves the robustness of the predictions by incorporating multiple models' probabilities, offering a more reliable forecast of game outcomes compared to using a single model. The predicted probabilities provide insights into the relative confidence of the predictions, assisting in better understanding the likelihood of a team winning.
