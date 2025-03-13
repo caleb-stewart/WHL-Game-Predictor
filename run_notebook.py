@@ -8,7 +8,7 @@ import json
 
 notebook_name = "WHL_Win_Predictor.ipynb"
 
-with open(notebook_name, 'r') as notebook_file:
+with open(notebook_name, 'r', encoding='utf-8') as notebook_file:
     notebook_content = json.load(notebook_file)
 
 # ensure we are using the right kernel to be ran in the command line
