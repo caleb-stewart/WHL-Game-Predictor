@@ -5,22 +5,31 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 
+# Define the features names used for training the WHL model
+features = ['target_goals', 'opponent_goals', 'target_PP%', 'opponent_PP%', 'target_SOG', 'opponent_SOG', 'target_FOW%', 'opponent_FOW%', 'Home/Away', 'goals_diff', 'ppp_diff', 'sog_diff', 'fowp_diff']
+# This is the dependency column we want to predict
+target_col = 'target_win'
+
 def train_team_model(team_data):
-    # Assuming team_data is a list of dictionaries with features and a target column
+    '''
+    team_data: LIST of dictionaries with features and target column
+    Each dictionary should contain the same keys as the features list and the target column.
 
-    # print(team_data[0][0].keys())
-    df = pd.DataFrame(team_data, columns=['target_goals', 'opponent_goals', 'target_PP%', 'opponent_PP%', 'target_SOG', 'opponent_SOG', 'target_FOW%', 'opponent_FOW%', 'Home/Away', 'goals_diff', 'ppp_diff', 'sog_diff', 'fowp_diff', 'target_win'])
+    This function ONLY TRAINS the model and does not make any predictions.
+    It returns the trained model and the scaler used to standardize the features.
+    '''
 
-    # This is the dependency column we want to predict
-    dependency = 'target_win'
+    # create dataframe from the list of dictionaries
+    # appends the dependency column to the features list
+    df = pd.DataFrame(team_data, columns=features + [target_col])
 
     # Throw error if the dependency column is not present
-    if dependency not in df.columns:
-        raise ValueError(f"Missing {dependency} column.")
+    if target_col not in df.columns:
+        raise ValueError(f"Missing {target_col} column.")
 
     # Get features and depencency columns
-    X = df.drop(columns=[dependency])
-    y = df[dependency]
+    X = df.drop(columns=[target_col])
+    y = df[target_col]
 
     # Init scaler and standardize features
     scaler = StandardScaler()
@@ -49,10 +58,12 @@ def calculate_team_prob(team_data, models):
     '''
     team_data: LIST of one dictionary with features for the team to predict
     models: Dictionary containing the trained scaler and classifiers
+
+    This function calculates the probability of winning for the team based on the trained models passed in.
     '''
     
     # Make sure the team_data is a DataFrame
-    X = pd.DataFrame(team_data, columns=['target_goals', 'opponent_goals', 'target_PP%', 'opponent_PP%', 'target_SOG', 'opponent_SOG', 'target_FOW%', 'opponent_FOW%', 'Home/Away', 'goals_diff', 'ppp_diff', 'sog_diff', 'fowp_diff'])
+    X = pd.DataFrame(team_data, columns=features)
 
     # Scale the prediction data using the scaler from the trained model
     # We only have one scaler for all classifiers
