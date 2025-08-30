@@ -1,4 +1,4 @@
-name: WHL Daily Script ${{ github.run_number }}
+name: WHL Daily Script
 
 on:
   schedule:
