@@ -5,6 +5,9 @@ on:
     - cron: "0 16 * * *" # Runs daily at 9am pst
   workflow_dispatch: # allows manual trigger
 
+permissions:
+  contents: write
+
 jobs:
   update-csv:
     runs-on: ubuntu-latest
