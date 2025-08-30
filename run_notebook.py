@@ -1,6 +1,10 @@
+
+import sys
 import asyncio
+
+if sys.platform.startswith("win"):
 # Set the correct event loop policy for Windows. IDK if this does anything... the warning is still there
-asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 
 import os

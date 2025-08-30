@@ -2,8 +2,8 @@ name: WHL Daily Script
 
 on:
   schedule:
-    - cron: "0 9 * * *"   # Runs daily at 9am pst
-  workflow_dispatch:       # allows manual trigger
+    - cron: "0 16 * * *" # Runs daily at 9am pst
+  workflow_dispatch: # allows manual trigger
 
 jobs:
   update-csv:
@@ -23,8 +23,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run script
-        run: python run_notebook.py
+      - name: Execute Jupyter Notebook
+        run: |
+          jupyter nbconvert --to notebook --execute WHL_Win_Predictor.ipynb --output WHL_Win_Predictor.ipynb
 
       - name: Commit and push changes
         run: |
