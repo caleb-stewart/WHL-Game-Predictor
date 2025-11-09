@@ -2,8 +2,8 @@ name: WHL Daily Script
 
 on:
   schedule:
-    - cron: "0 16 * * *" # Runs daily at 9am pst
-  workflow_dispatch: # allows manual trigger
+    - cron: "0 16 * * *" # Runs daily at 9am PST
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -30,10 +32,14 @@ jobs:
         run: |
           jupyter nbconvert --to notebook --execute WHL_Win_Predictor.ipynb --output WHL_Win_Predictor.ipynb
 
-      - name: Commit and push changes
+      - name: Pull latest changes (to prevent push conflicts)
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main || true
+
+      - name: Commit and push changes
+        run: |
           git add All_teams_WHL_stats.csv prediction_record.csv prediction_record.xlsx || echo "No files to add"
           git commit -m "Automated Prediction Record Update - $(TZ='America/Los_Angeles' date +'%Y-%m-%d %H:%M')" || echo "No changes to commit"
-          git push
+          git push origin main
